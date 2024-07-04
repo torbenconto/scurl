@@ -5,6 +5,4 @@ set(CMAKE_CXX_STANDARD 26)
 
 add_executable(untitled main.cpp
         strings.cpp
-        strings.hpp
-        http.cpp
-        http.hpp)
+        strings.hpp)
