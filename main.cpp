@@ -1,6 +1,6 @@
 #include <iostream>
 #include <sys/socket.h>
-#include <cstring>
+#include "strings.hpp"
 #include <netdb.h>
 #include <unistd.h>
 
@@ -11,6 +11,30 @@ int main(int argc, char * argv[]) {
     }
 
     const char* url = argv[1];
+    if (starts_with(url, "http://") || starts_with(url, "https://")) {
+        std::cerr << "Please do not include a protocol\n";
+        return 1;
+    }
+
+    const std::string urlStr = url;
+
+    std::vector<std::string> parts = split(urlStr, "/");
+    if (parts.size() == 1) {
+        url = parts[0].c_str();
+    } else {
+        url = parts[0].c_str();
+        parts.erase(parts.begin());
+        // Set the path
+        std::string path = "/";
+        for (const std::string& part : parts) {
+            path += part;
+            if (!ends_with(path, "/")) {
+                path += "/";
+            }
+        }
+        std::cout << "Path: " << path << std::endl;
+    }
+
     int port = 80; // Default port
 
     if (argc >= 3) {
