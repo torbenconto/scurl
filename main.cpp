@@ -15,17 +15,16 @@ int main(int argc, char * argv[]) {
         std::cerr << "Please do not include a protocol\n";
         return 1;
     }
-
     const std::string urlStr = url;
 
+    std::string path;
     std::vector<std::string> parts = split(urlStr, "/");
-    if (parts.size() == 1) {
-        url = parts[0].c_str();
-    } else {
-        url = parts[0].c_str();
+    std::string hostName = parts.at(0);
+
+    if (parts.size() != 1) {
         parts.erase(parts.begin());
         // Set the path
-        std::string path = "/";
+        path = "/";
         for (const std::string& part : parts) {
             path += part;
             if (!ends_with(path, "/")) {
@@ -50,7 +49,9 @@ int main(int argc, char * argv[]) {
     hints.ai_family = AF_INET; // IPv4
     hints.ai_socktype = SOCK_STREAM; // TCP
 
-    if (getaddrinfo(url, nullptr, &hints, &res) != 0) {
+    std::cout << hostName << std::endl;
+
+    if (getaddrinfo(hostName.c_str(), nullptr, &hints, &res) != 0) {
         std::cerr << "Failed to resolve hostname\n";
         return 1;
     }
@@ -75,7 +76,7 @@ int main(int argc, char * argv[]) {
     }
 
     // Build an HTTP request
-    std::string request = "GET / HTTP/1.1\r\nHost: " + std::string(url) + "\r\nConnection: close\r\n\r\n";
+    std::string request = "GET " + path + " HTTP/1.1\r\nHost: " + std::string(hostName) + "\r\nConnection: close\r\n\r\n";
     if (send(sock, request.c_str(), request.size(), 0) < 0) {
         std::cerr << "Failed to send request\n";
         return 1;
