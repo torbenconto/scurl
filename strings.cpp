@@ -3,6 +3,7 @@
 //
 
 #include "strings.hpp"
+#include <iostream>
 
 
 std::vector<std::string> split(const std::string& s, const std::string& delimiter) {
@@ -43,5 +44,9 @@ void extract_host_and_path(const std::string& url, std::string& hostName, std::s
                 path += "/";
             }
         }
+    }
+
+    if (path.empty()) {
+        path = "/";
     }
 }

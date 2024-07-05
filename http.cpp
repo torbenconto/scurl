@@ -12,6 +12,29 @@
 #include <unistd.h>
 
 // Marshal the response into an response object
+std::string http::parse_chunked_body(const std::vector<std::string>& lines, const size_t start_index) {
+    std::string body;
+    size_t i = start_index;
+    while (i < lines.size()) {
+        // Read the chunk size
+        std::string chunk_size_line = lines.at(i++);
+        if (chunk_size_line.empty()) continue;  // Skip any empty lines
+
+        // Convert the chunk size from hex to integer
+        size_t chunk_size = std::stoul(chunk_size_line, nullptr, 16);
+        if (chunk_size == 0) break;  // Last chunk (0) indicates end of body
+
+        // Read the chunk data
+        body.append(lines.at(i++).substr(0, chunk_size));
+
+        // Skip the CRLF after the chunk
+        if (i < lines.size() && lines.at(i).empty()) {
+            i++;
+        }
+    }
+    return body;
+}
+
 http::response http::parse_response(const std::string& response) {
     http::response res;
     std::vector<std::string> lines = split(response, "\r\n");
@@ -21,11 +44,12 @@ http::response http::parse_response(const std::string& response) {
     res.status = std::stoi(statusLine.at(1));
 
     // Parse the headers
-    for (size_t i = 1; i < lines.size(); i++) {
+    size_t i = 1;
+    for (; i < lines.size(); i++) {
         std::string line = lines.at(i);
         if (line.empty()) {
             // The body starts after the headers
-            res.body = lines.at(i + 1);
+            i++;
             break;
         }
 
@@ -33,9 +57,23 @@ http::response http::parse_response(const std::string& response) {
         res.headers[parts.at(0)] = parts.at(1);
     }
 
+    // Check for Transfer-Encoding: chunked
+    if (res.headers.find("Transfer-Encoding") != res.headers.end() &&
+        res.headers["Transfer-Encoding"] == "chunked") {
+        // Parse the chunked body
+        res.body = parse_chunked_body(lines, i);
+        } else {
+            // If not chunked, the rest is the body
+            for (; i < lines.size(); i++) {
+                res.body += lines.at(i);
+                if (i != lines.size() - 1) {
+                    res.body += "\r\n";
+                }
+            }
+        }
+
     return res;
 }
-
 std::pair<int, http::response> http::make_ssl_request(const std::string& hostName, const std::string& path, int port) {
     SSL_library_init();
     SSL_load_error_strings();

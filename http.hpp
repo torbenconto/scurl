@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 
 class http {
@@ -22,6 +23,7 @@ public:
     static std::pair<int, response> make_ssl_request(const std::string& hostName, const std::string& path, int port);
     static std::pair<int, response> make_request(const std::string& hostName, const std::string& path, int port);
     static response parse_response(const std::string& response);
+    static std::string parse_chunked_body(const std::vector<std::string>& lines, size_t start_index);
 };
 
 
