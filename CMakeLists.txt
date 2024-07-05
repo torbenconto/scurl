@@ -7,6 +7,8 @@ find_package(OpenSSL REQUIRED)
 
 add_executable(scurl main.cpp
         strings.cpp
-        strings.hpp)
+        strings.hpp
+        http.cpp
+        http.hpp)
 
 target_link_libraries(scurl OpenSSL::SSL)

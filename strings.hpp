@@ -12,5 +12,6 @@
 std::vector<std::string> split(const std::string& str, const std::string& delimiter);
 bool starts_with(const std::string& str, const std::string& prefix);
 bool ends_with(const std::string& str, const std::string& suffix);
+void extract_host_and_path(const std::string& url, std::string& hostName, std::string& path);
 
 #endif //SPLIT_HPP

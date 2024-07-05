@@ -27,3 +27,21 @@ bool starts_with(const std::string& str, const std::string& prefix) {
 bool ends_with(const std::string& str, const std::string& suffix) {
     return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
+
+// No protocol should be included
+void extract_host_and_path(const std::string& url, std::string& hostName, std::string& path) {
+    std::vector<std::string> parts = split(url, "/");
+    hostName = parts.at(0);
+
+    if (parts.size() != 1) {
+        parts.erase(parts.begin());
+        // Set the path
+        path = "/";
+        for (const std::string& part : parts) {
+            path += part;
+            if (!ends_with(path, "/")) {
+                path += "/";
+            }
+        }
+    }
+}
