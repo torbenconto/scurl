@@ -7,7 +7,6 @@
 #include <iostream>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
-#include <sys/socket.h>
 #include "strings.hpp"
 #include <netdb.h>
 #include <unistd.h>

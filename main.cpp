@@ -1,10 +1,6 @@
 #include <iostream>
 #include "http.hpp"
-#include <sys/socket.h>
 #include "strings.hpp"
-#include <netdb.h>
-#include <unistd.h>
-#include <cstdlib>
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
