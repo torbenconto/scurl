@@ -3,6 +3,10 @@ project(scurl)
 
 set(CMAKE_CXX_STANDARD 26)
 
+find_package(OpenSSL REQUIRED)
+
 add_executable(scurl main.cpp
         strings.cpp
         strings.hpp)
+
+target_link_libraries(scurl OpenSSL::SSL)
